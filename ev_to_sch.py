@@ -40,27 +40,27 @@ def print_events_of_object(object_name, events):
     event_print = {'PERF':perf_print, 'WLTA':wlta_print, 'WUGR':wugr_print, 'PLIM':plim_print, 'PROD':prod_print}
     keyword_list = ['PERF','WLTA','WUGR','PLIM','PROD','INJE','BHPT','THPT','WEFA','LTAB','GOPT','GWIT','GPLI','GWRT','PERF']
 
-    splitted_events = []
+    splitted_events = {}
     for x in events:
         keywords = [word for word in x[1:] if len(word)>3 and word[:4].upper() in keyword_list]
         keywords_index = [x.index(i) for i in keywords]
-        
-
         s_ev = split_by_indx(x,keywords_index)
         for x in s_ev[1:]:
-            splitted_events.append([s_ev[0][0],x[0][:4].upper(),*x[1:]])
+            splitted_events.update({ (s_ev[0][0],x[0][:4].upper()): x[1:] })
 
+    for x in splitted_events: print(x, splitted_events[x]) # debup print
+
+    schedule_events = {}
     for x in splitted_events:
-        print(x)
+        # TODO make function for SCHDELUE events accumulation
+        pass
 
     
     #TODO make list of event objects (class Object(field, well, group) and it will have events (name, date))
     #       print events for an object only after treating all it's events
 
-    for x in events: print(object_name, x) # debug output
+    for x in events: print(object_name, x) # debug print
     print()
-
-
 
 
 
