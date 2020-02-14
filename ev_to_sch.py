@@ -8,14 +8,14 @@ def convert_event_to_sch_input(record):
 
 
 
-def perf_print(object_name, event):
-    perforation_multiplier = float(event[6])
+def perf_print(object_name, event_key, event):
+    perforation_multiplier = float(event[4])
     if perforation_multiplier > 0: 
-        print(f"{event[0]:%d.%m.%Y}\t{object_name}\tPERFORATION\t\t{event[2]}\t{event[3]}\t{float(event[4])*2:.4f}\t{event[5]}")
+        print(f"{event_key[0]:%d.%m.%Y}\t{object_name}\t\tPERFORATION\t\t{event[0]}\t{event[1]}\t{float(event[2])*2:.4f}\t{event[3]}")
         if perforation_multiplier != 1:
-            print(f"{event[0]:%d.%m.%Y}\t{object_name}\tCF-MULTIPLIER\t{event[2]}\t{event[3]}\t{float(event[6])}")
+            print(f"{event_key[0]:%d.%m.%Y}\t{object_name}\t\tCF-MULTIPLIER\t{event[2]}\t{event[3]}\t{float(event[4])}")
     else:
-        print(f"{event[0]:%d.%m.%Y}\t{object_name}\tSQUEEZE\t\t\t{event[2]}\t{event[3]}\t{float(event[4])*2:.4f}\t{event[5]}")
+        print(f"{event_key[0]:%d.%m.%Y}\t{object_name}\t\tSQUEEZE\t\t\t{event[0]}\t{event[1]}\t{float(event[2])*2:.4f}\t{event[3]}")
 
 def wlta_print(object_name, event):
     print(f"WELLNAME\t{object_name}\n\t{event[0]:%d.%m.%Y}\tKEYWORD WVFPDP\n\t{event[2]}")
@@ -40,27 +40,42 @@ def print_events_of_object(object_name, events):
     event_print = {'PERF':perf_print, 'WLTA':wlta_print, 'WUGR':wugr_print, 'PLIM':plim_print, 'PROD':prod_print}
     keyword_list = ['PERF','WLTA','WUGR','PLIM','PROD','INJE','BHPT','THPT','WEFA','LTAB','GOPT','GWIT','GPLI','GWRT','PERF']
 
-    splitted_events = {}
+    splitted_events = [] 
     for x in events:
         keywords = [word for word in x[1:] if len(word)>3 and word[:4].upper() in keyword_list]
         keywords_index = [x.index(i) for i in keywords]
         s_ev = split_by_indx(x,keywords_index)
-        for x in s_ev[1:]:
-            splitted_events.update({ (s_ev[0][0],x[0][:4].upper()): x[1:] })
+        #print(keywords)
+        #print(keywords_index)
+        #print(object_name, s_ev)
+        #print(s_ev)
 
-    for x in splitted_events: print(x, splitted_events[x]) # debup print
+        for x in s_ev[1:]:
+            #splitted_events.update({ (s_ev[0][0],x[0][:4].upper()): x[1:] })
+            #splitted_events.append((s_ev[0][0], x[0][:4].upper(), x[1:]))
+            #print((object_name, s_ev[0][0], x[0][:4].upper(), x[1:]))
+            curr_ev = (object_name, s_ev[0][0], x[0][:4].upper(), x[1:])
+            if curr_ev not in splitted_events:
+                splitted_events.append(curr_ev)
+            #pass
 
     schedule_events = {}
     for x in splitted_events:
         # TODO make function for SCHDELUE events accumulation
+        # ierarchy (parent events -> child events)
+
+        print(x)
+
+        #if 'PERF' == x[1]: perf_print(object_name, x, splitted_events[x])
+
         pass
 
     
     #TODO make list of event objects (class Object(field, well, group) and it will have events (name, date))
     #       print events for an object only after treating all it's events
 
-    for x in events: print(object_name, x) # debug print
-    print()
+    #for x in events: print(object_name, x) # debug print
+    #print()
 
 
 
