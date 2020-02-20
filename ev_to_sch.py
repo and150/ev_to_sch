@@ -2,10 +2,9 @@ import sys
 from datetime import datetime
 
 
+'''
 def convert_event_to_sch_input(record):
     print(record)
-
-
 
 
 def perf_print(object_name, event_key, event):
@@ -28,23 +27,65 @@ def plim_print(object_name, event): # !!!! not realy reads PLIM event (hardcoded
 
 def prod_print(object_name, event):
     pass
+    '''
+
+'''
+############### try 2 #############
+def unload_perf(object_events):
+    for x in [f for f in object_events if f[2]=='PERF']:
+        perforation_multiplier = float(x[3][4])
+        if perforation_multiplier > 0: 
+            print(f"{x[1]:%d.%m.%Y}\t{x[0]}\t\tPERFORATION\t\t{x[3][0]}\t{x[3][1]}\t{float(x[3][2])*2:.4f}\t{x[3][3]}")
+            if perforation_multiplier != 1:
+                print(f"{x[1]:%d.%m.%Y}\t{x[0]}\t\tCF-MULTIPLIER\t{x[3][0]}\t{x[3][1]}\t{float(x[3][4])}")
+        else:
+            print(f"{x[1]:%d.%m.%Y}\t{x[0]}\t\tSQUEEZE\t\t\t{x[3][0]}\t{x[3][1]}\t{float(x[3][2])*2:.4f}\t{x[3][3]}")
+
+def unload_gconprod(object_events):
+
+    gopt = [x for x in object_events if x[2]=='GOPT']
+    gpli = [x for x in object_events if x[2]=='GPLI']
+    combo = {}
+
+    for x in gopt:
+        if x[1] in combo:
+            combo[x[1]].append(x)
+        else:
+            combo.update({x[1]:x})
+
+    for x in gpli:
+        if x[1] in combo:
+            combo[x[1]].append(x)
+        else:
+            combo.update({x[1]:x})
+
+    for x in combo:
+        if combo[x][2] == 'GOPT':
+
+        print(x, combo[x])
+
+
+    #for x in [f for f in object_events if f[2]=='GOPT']:
+    '''
 
 
 
 
-
-def split_by_indx(alist, indx):
-    return [alist[i:j] for i,j in zip([0]+indx, indx+[None])]
+#def split_by_indx(alist, indx):
+#    return [alist[i:j] for i,j in zip([0]+indx, indx+[None])]
 
 def print_events_of_object(object_name, events):
     event_print = {'PERF':perf_print, 'WLTA':wlta_print, 'WUGR':wugr_print, 'PLIM':plim_print, 'PROD':prod_print}
     keyword_list = ['PERF','WLTA','WUGR','PLIM','PROD','INJE','BHPT','THPT','WEFA','LTAB','GOPT','GWIT','GPLI','GWRT','PERF']
 
     splitted_events = [] 
+    obj_date_keywords = {}
     for x in events:
         keywords = [word for word in x[1:] if len(word)>3 and word[:4].upper() in keyword_list]
         keywords_index = [x.index(i) for i in keywords]
-        s_ev = split_by_indx(x,keywords_index)
+        s_ev = [x[i:j] for i,j in zip([0]+keywords_index, keywords_index+[None])] # split_by_index
+
+        #s_ev = split_by_indx(x,keywords_index)
         #print(keywords)
         #print(keywords_index)
         #print(object_name, s_ev)
@@ -54,28 +95,27 @@ def print_events_of_object(object_name, events):
             #splitted_events.update({ (s_ev[0][0],x[0][:4].upper()): x[1:] })
             #splitted_events.append((s_ev[0][0], x[0][:4].upper(), x[1:]))
             #print((object_name, s_ev[0][0], x[0][:4].upper(), x[1:]))
-            curr_ev = (object_name, s_ev[0][0], x[0][:4].upper(), x[1:])
+
+            # make  list of all keywords
+            # TODO remove duplicate keywords (by date and keyword) and leave the last
+            curr_ev = [object_name, s_ev[0][0], x[0][:4].upper(), x[1:]] # all keywords
             if curr_ev not in splitted_events:
                 splitted_events.append(curr_ev)
+
             #pass
 
-    schedule_events = {}
-    for x in splitted_events:
-        # TODO make function for SCHDELUE events accumulation
-        # ierarchy (parent events -> child events)
 
-        print(x)
 
-        #if 'PERF' == x[1]: perf_print(object_name, x, splitted_events[x])
+    #schedule_events = {}
+    #for x in splitted_events:
+    #    print(x)
 
-        pass
+    #unload_perf(splitted_events)
+    #unload_gconprod(splitted_events)
 
     
     #TODO make list of event objects (class Object(field, well, group) and it will have events (name, date))
     #       print events for an object only after treating all it's events
-
-    #for x in events: print(object_name, x) # debug print
-    #print()
 
 
 
