@@ -1,109 +1,7 @@
 import sys
 from datetime import datetime
 
-
-#def convert_event_to_sch_input(record):
-#    print(record)
-#
-
-
-
-#'''
-################ try 2 #############
-#def unload_perf(object_events):
-#    for x in [f for f in object_events if f[2]=='PERF']:
-#        perforation_multiplier = float(x[3][4])
-#        if perforation_multiplier > 0: 
-#            print(f"{x[1]:%d.%m.%Y}\t{x[0]}\t\tPERFORATION\t\t{x[3][0]}\t{x[3][1]}\t{float(x[3][2])*2:.4f}\t{x[3][3]}")
-#            if perforation_multiplier != 1:
-#                print(f"{x[1]:%d.%m.%Y}\t{x[0]}\t\tCF-MULTIPLIER\t{x[3][0]}\t{x[3][1]}\t{float(x[3][4])}")
-#        else:
-#            print(f"{x[1]:%d.%m.%Y}\t{x[0]}\t\tSQUEEZE\t\t\t{x[3][0]}\t{x[3][1]}\t{float(x[3][2])*2:.4f}\t{x[3][3]}")
-#
-#def unload_gconprod(object_events):
-#
-#    gopt = [x for x in object_events if x[2]=='GOPT']
-#    gpli = [x for x in object_events if x[2]=='GPLI']
-#    combo = {}
-#
-#    for x in gopt:
-#        if x[1] in combo:
-#            combo[x[1]].append(x)
-#        else:
-#            combo.update({x[1]:x})
-#
-#    for x in gpli:
-#        if x[1] in combo:
-#            combo[x[1]].append(x)
-#        else:
-#            combo.update({x[1]:x})
-#
-#    for x in combo:
-#        if combo[x][2] == 'GOPT':
-#
-#        print(x, combo[x])
-#
-#
-#    #for x in [f for f in object_events if f[2]=='GOPT']:
-#    '''
-
-
-
-
-
-#def print_events_of_object(object_name, events):
-#    event_print = {'PERF':perf_print, 'WLTA':wlta_print, 'WUGR':wugr_print, 'PLIM':plim_print, 'PROD':prod_print}
-#    keyword_list = ['PERF','WLTA','WUGR','PLIM','PROD',
-#                    'INJE','BHPT','THPT','WEFA','LTAB',
-#                    'GOPT','GWIT','GPLI','GWRT','GLPT',
-#                    'PERF','DREF','WALQ','WLTA']
-#
-#    splitted_events = [] 
-#    obj_date_keywords = {}
-#    for x in events:
-#        keywords = [word for word in x[1:] if len(word)>3 and word[:4].upper() in keyword_list]
-#        keywords_index = [x.index(i) for i in keywords]
-#        s_ev = [x[i:j] for i,j in zip([0]+keywords_index, keywords_index+[None])] # split_by_index
-#
-#        s_ev = split_by_indx(x,keywords_index)
-#        #print(keywords)
-#        #print(keywords_index)
-#        #print(object_name, s_ev)
-#        print(object_name, s_ev[0], s_ev[1:])
-#
-#        for x in s_ev[1:]:
-#            #splitted_events.update({ (s_ev[0][0],x[0][:4].upper()): x[1:] })
-#            #splitted_events.append((s_ev[0][0], x[0][:4].upper(), x[1:]))
-#            #print((object_name, s_ev[0][0], x[0][:4].upper(), x[1:]))
-#
-#            # make  list of all keywords
-#            # TODO remove duplicate keywords (by date and keyword) and leave the last
-#            curr_ev = [object_name, s_ev[0][0], x[0][:4].upper(), x[1:]] # all keywords
-#            if curr_ev not in splitted_events:
-#                splitted_events.append(curr_ev)
-#
-#            #pass
-#
-#    #schedule_events = {}
-#    #for x in splitted_events:
-#    #    print(x)
-#
-#    #unload_perf(splitted_events)
-#    #unload_gconprod(splitted_events)
-#
-#    
-#    #TODO make list of event objects (class Object(field, well, group) and it will have events (name, date))
-#    #       print events for an object only after treating all it's events
-
-
-
-
-
-
-
-
-
-
+SOP = datetime(2020,5,1) # start of prediction
 
 
 def split_by_indx(alist, indx):
@@ -139,7 +37,7 @@ def separate(events):
 def perf_print(object_name, event):
 
     out_string = ''
-    date = f'{event[0]:%d.%m.%Y}'
+    date_string = f'{event[0]:%d.%m.%Y}'
     top = event[2][0]
     bot = event[2][1]
     diameter = 2*float(event[2][2])
@@ -147,27 +45,27 @@ def perf_print(object_name, event):
     multiplier = float(event[2][4])
 
     if multiplier > 0: 
-        out_string =  f"{date}\t{object_name}\tPerforation\t{top}\t{bot}\t{diameter:.4f}\t{skin}"
+        out_string =  f"{date_string}\t{object_name}\tPerforation\t{top}\t{bot}\t{diameter:.4f}\t{skin}"
         if multiplier != 1:
-            out_string += f"\n{date}\t{object_name}\tCF-MULTIPLIER\t{top}\t{bot}\t{multiplier}"
+            out_string += f"\n{date_string}\t{object_name}\tCF-MULTIPLIER\t{top}\t{bot}\t{multiplier}"
     else:
-        out_string = f"{date}\t{object_name}\tSqueeze\t{top}\t{bot}\t{diameter:.4f}\t{skin}"
+        out_string = f"{date_string}\t{object_name}\tSqueeze\t{top}\t{bot}\t{diameter:.4f}\t{skin}"
 
     return out_string
 
 
 def wlta_print(object_name, event):
 
-    date = f'{event[0]:%d.%m.%Y}'
+    date_string = f'{event[0]:%d.%m.%Y}'
     wlta_modifier = event[2][0]
-    return f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WVFPDP\n\t{wlta_modifier}\n"
+    return f"WELLNAME\t{object_name}\n\t{date_string}\tKEYWORD WVFPDP\n\t{wlta_modifier}\n"
 
 
 def wugr_print(object_name, event):
 
-    date = f'{event[0]:%d.%m.%Y}'
+    date_string = f'{event[0]:%d.%m.%Y}'
     wugr_value = event[2][0]
-    out_string =  f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WGRUPCON\n\tYES\t{wugr_value}\tLIQ\n"
+    out_string =  f"WELLNAME\t{object_name}\n\t{date_string}\tKEYWORD WGRUPCON\n\tYES\t{wugr_value}\tLIQ\n"
 
     if len(event[2]) >= 2 and event[2][1].upper() == 'OFF':
         out_string =  f"WELLNAME\t{object_name}\n\t{event[0]:%d.%m.%Y}\tKEYWORD WGRUPCON\n\tNO\n"
@@ -177,200 +75,220 @@ def wugr_print(object_name, event):
 
 def plim_print(object_name, event):  #### only for WCT !!!!
 
-    date = f'{event[0]:%d.%m.%Y}'
+    date_string = f'{event[0]:%d.%m.%Y}'
     wcut = event[2][1]
 
-    return  f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WECON\n\t2* {wcut} 2* WELL\n"
+    return  f"WELLNAME\t{object_name}\n\t{date_string}\tKEYWORD WECON\n\t2* {wcut} 2* WELL\n"
 
 
-def prod_print(object_name, event): #### !!! Hardcoded first BHP, no THP and VFP table, must be updated by WELTARG BHP !!!
+def prod_print(object_name, event, *args): #### !!! Hardcoded first BHP, no THP and VFP table, must be updated by WELTARG BHP !!!
 
-    date = f'{event[0]:%d.%m.%Y}'
+    out_string = ''
+    date_string = f'{event[0]:%d.%m.%Y}'
     regime = event[2][0]
     rate = event[2][1]
     bhp = 100 # !!!
 
 
+    # get current vfp status
+    vfp_numb = '0' # default start value
+    if len(args)>0:
 
-    #out_string = '--hist prod event'
-    out_string = ''
+        vfp_state = args[0]
+        for item in vfp_state:
+            date = item[0]
+            if event[0] >= date:
+                vfp_numb = item[2][0].replace('tubeprod','').replace('tubeinje','')
+
+                if len(item[2])>1:
+                    if item[2][1] == 'OFF':
+                        vfp_numb = '0'
+            #print(date, vfp_numb, event[0]) # debug print
+
+
 
     if regime != 'HLIQ':
-        out_string = f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WCONPROD\n\t1* BHP 1* 1* 1* {rate} 1* {bhp}\n"
+        out_string = f"WELLNAME\t{object_name}\n\t{date_string}\tKEYWORD WCONPROD\n\t1* BHP 1* 1* 1* {rate} 1* {bhp} 1* {vfp_numb}\n"
         if object_name[0] != 'F': # hardcoded FW !!
-            out_string += f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WTEST\n\t30 PGE 200 1*\n"
+            out_string += f"WELLNAME\t{object_name}\n\t{date_string}\tKEYWORD WTEST\n\t30 PGE 200 1*\n"
+    else:
+        out_string = f"WELLNAME\t{object_name}\n\t{date_string}\tKEYWORD VFP\n\t{vfp_numb}\n"
 
     return out_string
 
 
-def inje_print(object_name, event): #### !!! Hardcoded firs BHP, THP, no VFP table number
+def inje_print(object_name, event, *args): #### !!! Hardcoded firs BHP, THP, no VFP table number
 
-    date = f'{event[0]:%d.%m.%Y}'
+    out_string = ''
+    date_string = f'{event[0]:%d.%m.%Y}'
     regime = event[2][0]
     rate = event[2][1]
     bhp = 430
     thp = 130
-    vfp = ''
 
-    #out_string = '--hist inje event'
-    out_string = ''
+    # get current vfp status
+    vfp_numb = '0' # default start value
+    if len(args)>0:
+
+        vfp_state = args[0]
+        for item in vfp_state:
+            date = item[0]
+            if event[0] >= date:
+                vfp_numb = item[2][0].replace('tubeprod','').replace('tubeinje','')
+
+                if len(item[2])>1:
+                    if item[2][1] == 'OFF':
+                        vfp_numb = '0'
+            #print(date, vfp_numb, event[0]) # debug print
 
     if regime != 'HWAT':
-        out_string = f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WCONINJE\n\tWATER 1* RATE {rate} 1* {bhp} {thp} {vfp}\n"
+        out_string = f"WELLNAME\t{object_name}\n\t{date_string}\tKEYWORD WCONINJE\n\tWATER 1* RATE {rate} 1* {bhp} {thp} {vfp_numb}\n"
+    else:
+        pass
 
     return out_string
 
 
 def bhpt_print(object_name, event):
 
-    date = f'{event[0]:%d.%m.%Y}'
+    date_string = f'{event[0]:%d.%m.%Y}'
     bhp_target = event[2][0]
 
-    return  f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WELTARG\n\tBHP {bhp_target}\n"
+    return  f"WELLNAME\t{object_name}\n\t{date_string}\tKEYWORD WELTARG\n\tBHP {bhp_target}\n"
 
 
-# TODO add VFP target to every THP event !!
-def thpt_print(object_name, event, vfp_state): #### Beware! It's only for forecast wells !!!!
+def thpt_print(object_name, event, *args):
 
-    date_time = event[0]
-    date = f'{event[0]:%d.%m.%Y}'
+    date_string = f'{event[0]:%d.%m.%Y}'
     thp_target = event[2][0]
 
-    out =  f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WELTARG\n\tTHP {thp_target}\n"
-    #out =  f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WELTARG\n\tTHP" # {thp_target}\n"
-    vfp_out = ''
+    out_string =  f"WELLNAME\t{object_name}\n\t{date_string}\tKEYWORD WELTARG\n\tTHP {thp_target}\n"
 
-    for vfp in vfp_state:
-        if date_time < vfp[0]:
-            #print(f"vfp state = {vfp[0]}  {vfp[2]}  THP date = {date} NO THP POSSIBLE!")
-            return  ''
-            
-            
-        elif date_time >= vfp[0] and len(vfp[2]) > 1:
-            if vfp[2][1] == 'OFF':
-                #print(f"vfp state = {vfp[0]}  {vfp[2]}  THP date = {date} VFP OFF, NO THP POSSIBLE!")
-                ltab_name = vfp[2][0].replace('tubeprod','').replace('tubeinje','')
-                return  f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WELTARG\n\tVFP 0\n"
+    # get current vfp status
+    vfp_numb = '0' # default start value
+    if len(args)>0:
 
-        else:
-            #print(f"vfp state = {vfp[0]}  {vfp[2]}  THP date = {date} VFP ON")
-            ltab_name = vfp[2][0].replace('tubeprod','').replace('tubeinje','')
-            vfp_out = f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WELTARG\n\tVFP {ltab_name}\n"
+        vfp_state = args[0]
+        for item in vfp_state:
+            date = item[0]
+            if event[0] >= date:
+                vfp_numb = item[2][0].replace('tubeprod','').replace('tubeinje','')
 
+                if len(item[2])>1:
+                    if item[2][1] == 'OFF':
+                        vfp_numb = '0'
+            #print(date, vfp_numb, event[0]) # debug print
 
-    #return  f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WELTARG\n\tTHP {thp_target}\n"
-    return  vfp_out + out
+    if vfp_numb == '0':
+        out_string =  '' 
+
+    return out_string 
 
 
 def wefa_print(object_name, event):
 
-    date = f'{event[0]:%d.%m.%Y}'
+    date_string = f'{event[0]:%d.%m.%Y}'
     wefac = event[2][0]
     
-    return  f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WEFAC\n\t{wefac}\n"
+    return  f"WELLNAME\t{object_name}\n\t{date_string}\tKEYWORD WEFAC\n\t{wefac}\n"
 
 
 def ltab_print(object_name, event):
 
-    date = f'{event[0]:%d.%m.%Y}'
+    date_string = f'{event[0]:%d.%m.%Y}'
     ltab_name = event[2][0].replace('tubeprod','').replace('tubeinje','')
     off = len(event[2]) > 1 and event[2][1] == 'OFF'
 
     if off:
-        return  f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WELTARG\n\tVFP 0\n"
+        return  f"WELLNAME\t{object_name}\n\t{date_string}\tKEYWORD WELTARG\n\tVFP 0\n"
     else:
-        return  f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WELTARG\n\tVFP {ltab_name}\n"
+        return  f"WELLNAME\t{object_name}\n\t{date_string}\tKEYWORD WELTARG\n\tVFP {ltab_name}\n"
 
 
 
 def glpt_print(object_name, event): # !!! made only for FW wells !!!!
 
-    date = f'{event[0]:%d.%m.%Y}'
+    date_string = f'{event[0]:%d.%m.%Y}'
     rate = event[2][0]
 
-    return f"GROUPNAME\t{object_name}\n\t{date}\tKEYWORD GCONPROD\n\tLRAT 1* 1* 1* {rate} 'NONE'\n"
+    return f"GROUPNAME\t{object_name}\n\t{date_string}\tKEYWORD GCONPROD\n\tLRAT 1* 1* 1* {rate} 'NONE'\n"
 
 
 def gopt_print(object_name, event):
 
-    date = f'{event[0]:%d.%m.%Y}'
+    date_string = f'{event[0]:%d.%m.%Y}'
     rate = event[2][0]
     water_lim = '1*'   ## default value hardcoded !!! check if it updated by GRUPTARG
     off = event[2][1] == 'OFF'
 
-    out_string = f"GROUPNAME\t{object_name}\n\t{date}\tKEYWORD GCONPROD\n\tORAT {rate} {water_lim} 2* RATE 3* WELL\n"
+    out_string = f"GROUPNAME\t{object_name}\n\t{date_string}\tKEYWORD GCONPROD\n\tORAT {rate} {water_lim} 2* RATE 3* WELL\n"
     if off:
-        out_string = f"GROUPNAME\t{object_name}\n\t{date}\tKEYWORD GCONPROD\n\tFLD\n"
+        out_string = f"GROUPNAME\t{object_name}\n\t{date_string}\tKEYWORD GCONPROD\n\tFLD\n"
 
     return out_string
 
 
 def gpli_print(object_name, event):
 
-    date = f'{event[0]:%d.%m.%Y}'
+    date_string = f'{event[0]:%d.%m.%Y}'
     rate = event[2][1] 
     off = len(event[2]) > 1 and event[2][1] == 'OFF'
 
     if off:
-        return  f"GROUPNAME\t{object_name}\n\t{date}\tKEYWORD GRUPTARG\n\tWRAT 1*\n"
+        return  f"GROUPNAME\t{object_name}\n\t{date_string}\tKEYWORD GRUPTARG\n\tWRAT 1*\n"
     else:
-        return  f"GROUPNAME\t{object_name}\n\t{date}\tKEYWORD GRUPTARG\n\tWRAT {rate}\n"
-
+        return  f"GROUPNAME\t{object_name}\n\t{date_string}\tKEYWORD GRUPTARG\n\tWRAT {rate}\n"
 
 
 def gwit_print(object_name, event):
 
-    date = f'{event[0]:%d.%m.%Y}'
+    date_string = f'{event[0]:%d.%m.%Y}'
     rate = event[2][0]
     off = len(event[2]) > 1 and event[2][1] == 'OFF'
 
     if off:
-        return  f"GROUPNAME\t{object_name}\n\t{date}\tKEYWORD GCONINJE\n\tWATER NONE \n"
+        return  f"GROUPNAME\t{object_name}\n\t{date_string}\tKEYWORD GCONINJE\n\tWATER NONE \n"
     else:
-        return  f"GROUPNAME\t{object_name}\n\t{date}\tKEYWORD GCONINJE\n\tWATER RATE {rate}\n"
-
-
+        return  f"GROUPNAME\t{object_name}\n\t{date_string}\tKEYWORD GCONINJE\n\tWATER RATE {rate}\n"
 
 
 def gwrt_print(object_name, event): # !!! Hardcoded event !!!
 
-    date = f'{event[0]:%d.%m.%Y}'
+    date_string = f'{event[0]:%d.%m.%Y}'
     rate = event[2][0]
     reinj_frac = 1.0
     #if float(rate) > 6095:
     #    reinj_name = 'GU_CPF2'
 
-    return  f"GROUPNAME\t{object_name}\n\t{date}\tKEYWORD GCONINJE\n\tWATER REIN 1* 1* {reinj_frac} 4* WQ2  \n"
-
-
+    return  f"GROUPNAME\t{object_name}\n\t{date_string}\tKEYWORD GCONINJE\n\tWATER REIN 1* 1* {reinj_frac} 4* WQ2  \n"
 
 
 def dref_print(object_name, event, fpd): ### !! NO WHEDREF can't be read by SCHEDULE - make manually 
 
-    date = f'{fpd:%d.%m.%Y}'
+    date_string = f'{fpd:%d.%m.%Y}'
     dref = event[2][0]
 
-    return  f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WHEDREF\n\t{dref}\n"
+    return  f"WELLNAME\t{object_name}\n\t{date_string}\tKEYWORD WHEDREF\n\t{dref}\n"
 
 
 def walq_print(object_name, event):
 
-    date = f'{event[0]:%d.%m.%Y}'
+    date_string = f'{event[0]:%d.%m.%Y}'
     walq = event[2][0]
 
-    return  f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WELTARG\n\tLIFT {walq}\n"
+    return  f"WELLNAME\t{object_name}\n\t{date_string}\tKEYWORD WELTARG\n\tLIFT {walq}\n"
 
 
 def welopen_print(object_name, event):
 
     out = ''
-    date = f'{event[0]:%d.%m.%Y}'
+    date_string = f'{event[0]:%d.%m.%Y}'
 
-    #return  f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WELOPEN\n\tSHUT\n"
-    if event[0] > datetime.datetime(2020, 5, 2, 0, 0):
-        out = f"WELLNAME\t{object_name}\n\t{date}\tKEYWORD WCONPROD\n\t1* BHP 1* 1* 1* 0.001 1* 100\n"
+    if event[0] > SOP:
+        out = f"WELLNAME\t{object_name}\n\t{date_string}\tKEYWORD WCONPROD\n\t1* BHP 1* 1* 1* 0.0  1* 100\n"
 
     return out
+
 
 printer = {
         'PERF': perf_print,
@@ -394,15 +312,19 @@ printer = {
         }
 
 
-def  eventstring_for_sch(object_name, event, event_printer, fpd = []):
-    if len(fpd) > 0:
-        return event_printer(object_name, event, fpd)
-    else:
-        return event_printer(object_name, event)
+def  eventstring_for_sch(object_name, event, event_printer, *args):
+    return event_printer(object_name, event, *args)
+    #if len(fpd) > 0:
+    #    return event_printer(object_name, event, fpd)
+    #else:
+    #    return event_printer(object_name, event)
 
 
 
 def read_more_events_file(file_name):
+
+    events_by_object_separated = {}
+
     with open(file_name, 'r') as input_file:
         all_events = [x for x in [line.split() for line in  [x[:x.index('/')] if '/' in x else x for x in input_file]  ] if len(x)>0 and x[0][:2]!='--'] # trim comments after '/', filter out empty lines and comment lines
 
@@ -414,9 +336,7 @@ def read_more_events_file(file_name):
             else:
                 events_by_object.update({item[0]:[[datetime.strptime(item[1],"%d.%m.%Y")]+item[2:]]})
 
-
         # pick all event keyword and make separate event for each one
-        events_by_object_separated = {}
         for item in events_by_object:
 
             if item not in events_by_object_separated:
@@ -427,47 +347,56 @@ def read_more_events_file(file_name):
                     events_by_object_separated[item].append(x)
                     #print(x)
 
+    return events_by_object_separated
 
-        # iterates over all events for all items (well, groups)
-        # first loop prints perforations only
+
+
+
+def print_sch_input(events_by_object_separated):
+
+        #the first loop prints PERForations only
         for item in events_by_object_separated:
-
             for event in events_by_object_separated[item]:
                 event_keyword = event[1]
                 if event_keyword == 'PERF':
                     print(eventstring_for_sch(item, event, printer[event_keyword]))
- 
-
         print()
 
-        # TODO events analizer (1 - PROD and PERF  for forecast must be at the same date! Or set low rate after PERF (better) )
-        # TODO events analizer (2 - THP must always have VFP event )
 
-        # second loop prints all other events
+        #the second loop prints zero limits after SOP
+        for item in events_by_object_separated:
+            for event in events_by_object_separated[item]:
+                event_keyword = event[1]
+                event_date = event[0]
+                if event_keyword == 'PERF' and event_date > SOP:
+                    print(eventstring_for_sch(item, event, printer['WELOPEN']))
+                    break # ???
+        print()
+
+
+        #the third loop prints all other events
         for item in events_by_object_separated:
 
             #perf_dates = [x[0] for x in events_by_object_separated[item] if x[1] == 'PERF']
             #if len(perf_dates) > 0:
             #    first_perf_date = perf_dates[0]
 
-            vfp_states = [x  for x in events_by_object_separated[item] if x[1] == 'LTAB']
+            vfp_states = [x for x in events_by_object_separated[item] if x[1] == 'LTAB']
 
             for event in events_by_object_separated[item]:
                 event_keyword = event[1]
 
-                if event_keyword == 'PERF': # WELOPEN
-                    print(eventstring_for_sch(item, event, printer['WELOPEN']))
-
-                if event_keyword not in ['PERF', 'DREF', 'THPT']: 
+                if event_keyword not in ['PERF', 'DREF', 'PROD', 'INJE', 'THPT']: #['PERF', 'DREF', 'THPT']: 
                     print(eventstring_for_sch(item, event, printer[event_keyword]))
 
-                if event_keyword == 'THPT':
-                    print(eventstring_for_sch(item, event, printer[event_keyword], fpd=vfp_states))
-
-
-                #if event_keyword in ['DREF']:
-                #    print(eventstring_for_sch(item, event, printer[event_keyword], fpd=first_perf_date))
+                if event_keyword in ['PROD', 'INJE', 'THPT']:
+                    print(eventstring_for_sch(item, event, printer[event_keyword], vfp_states))
 
 
 
-read_more_events_file(sys.argv[1])
+
+
+if __name__ == '__main__':
+
+    events = read_more_events_file(sys.argv[1])
+    print_sch_input(events)
