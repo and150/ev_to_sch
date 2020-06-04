@@ -260,7 +260,7 @@ def gwrt_print(object_name, event): # !!! Hardcoded event !!!
     #if float(rate) > 6095:
     #    reinj_name = 'GU_CPF2'
 
-    return  f"GROUPNAME\t{object_name}\n\t{date_string}\tKEYWORD GCONINJE\n\tWATER REIN 1* 1* {reinj_frac} 4* WQ2  \n"
+    return  f"GROUPNAME\t{object_name}\n\t{date_string}\tKEYWORD GCONINJE\n\tWATER REIN 1* 1* {reinj_frac} 4* WQ2\n"
 
 
 def dref_print(object_name, event, fpd): ### !! NO WHEDREF can't be read by SCHEDULE - make manually 
@@ -362,7 +362,6 @@ def print_sch_input(events_by_object_separated):
                     print(eventstring_for_sch(item, event, printer[event_keyword]))
         print()
 
-
         #the second loop prints zero limits after SOP
         for item in events_by_object_separated:
             for event in events_by_object_separated[item]:
@@ -373,7 +372,8 @@ def print_sch_input(events_by_object_separated):
                     break # ???
         print()
 
-
+        # TODO make printer of DREF (it doesn't work? need to check again) !!!
+        # TODO change GCONPROD (the water limit need to be combined with the oil limit)
         #the third loop prints all other events
         for item in events_by_object_separated:
 
